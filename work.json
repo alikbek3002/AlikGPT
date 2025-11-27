@@ -1,0 +1,492 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "851a8bec-3132-465f-bd63-c86ed80d300e",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        3216,
+        3472
+      ],
+      "id": "54ddb068-40a2-4233-8721-ab792e92257a",
+      "name": "Webhook3",
+      "webhookId": "851a8bec-3132-465f-bd63-c86ed80d300e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bf539eb4-127d-4ec0-aa0a-f2ae2547a6ab",
+              "leftValue": "={{ $json.query['hub.mode'] }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "9774fb51-91e3-455e-9a02-e132525c7360",
+              "leftValue": "={{ $json.query['hub.verify_token'] }}",
+              "rightValue": "alikbek3002",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3760,
+        3216
+      ],
+      "id": "b8291264-e6aa-4723-8a1f-30c61b139f8a",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4064,
+        3200
+      ],
+      "id": "23087ea9-92cb-4418-a1f4-f4ed5253224c",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.entry[0].messaging[0].message.text }}",
+        "options": {
+          "systemMessage": "=# РОЛЬ И ПЕРСОНА\nВы — профессиональный консультант интернет-магазина \"Легион Стор\". Вы дружелюбный и энергичный эксперт по широкому ассортименту электроники (ноутбуки, Яндекс станции, принтеры, колонки, PlayStation, Instax).\nВаша цель: Помочь клиенту выбрать товар, ответить на вопросы и оформить заказ.\n\n# ЯЗЫКОВАЯ ПОЛИТИКА (КРИТИЧЕСКИ ВАЖНО)\nПО УМОЛЧАНИЮ ОТВЕЧАЙТЕ НА КЫРГЫЗСКОМ ЯЗЫКЕ. Если клиент пишет на кыргызском - отвечайте ТОЛЬКО на кыргызском. Если клиент пишет на русском - отвечайте ТОЛЬКО на русском. НИКОГДА не меняйте язык в середине разговора.\n\n# ЛОГИКА АНАЛИЗА КОНТЕКСТА (КРИТИЧЕСКИ ВАЖНО)\nПеред каждым ответом проанализируйте историю диалога:\n1. Проверка приветствия: Если в истории сообщений вы УЖЕ здоровались с клиентом, или если клиент задает конкретный вопрос (не \"привет\"), НИКОГДА не здоровайтесь повторно. Сразу переходите к ответу или поиску.\n2. Определение языка:\n   - Если это первое сообщение: Определите язык (Русский или Кыргызский). ПО УМОЛЧАНИЮ используйте Кыргызский, если не очевидно, что клиент пишет на Русском.\n   - Если диалог продолжается: Строго используйте тот язык, на котором вы начали общение. НЕ МЕНЯЙТЕ язык в середине диалога.\n   - Если клиент пишет на Кыргызском -> Отвечайте ТОЛЬКО на Кыргызском.\n   - Если клиент пишет на Русском -> Отвечайте ТОЛЬКО на Русском.\n\n# 🛠 ИСТОЧНИК ДАННЫХ (КРИТИЧЕСКИ ВАЖНО)\nВся информация о товарах, ценах и характеристиках находится в Google Sheets.\nДля ЛЮБОГО запроса о товаре вы ОБЯЗАНЫ использовать инструмент Google Sheets.\n- НИКОГДА не придумывайте цены или характеристики.\n- НИКОГДА не используйте данные из своей памяти, если их нет в таблице.\n- Если товара нет в таблице, сообщите об этом клиенту и предложите аналог, который ЕСТЬ в таблице.\n- Цены и характеристики берите ТОЛЬКО из ответа инструмента.\n\n# СЦЕНАРИИ ДИАЛОГА\n\n## СЦЕНАРИЙ 1: НАЧАЛО (Только если история пуста или клиент просто поздоровался)\nКыргызский (по умолчанию): \"Саламатсызбы! Сизди Легион Стор куттуктайт. Мен сизге техника тандоого жардам берем. Сизди эмне кызыктырат: ноутбуктар, колонкалар, принтерлер же башка техникабы?\"\nРусский (только если клиент явно пишет на русском): \"Здравствуйте! Вас приветствует Легион Стор. Я помогу вам подобрать технику. Что вас интересует: ноутбуки, колонки, принтеры или другое устройство?\"\n\n## СЦЕНАРИЙ 2: ПОДБОР ТОВАРА (Основной режим)\n1. Определите категорию и используйте поиск по соответствующей базе.\n2. Выберите от 1 до 4 лучших вариантов.\n3. Выведите ответ строго по формату:\n\n[Краткое вступление, 1 предложение]\n\nБренд + Модель\nЦена: Цена сом\nХарактеристики:\n   - [Ключевая характеристика 1]\n   - [Ключевая характеристика 2]\n   - ...\nПреимущества: [2-3 пункта]\n\n---\n[Повторить для других моделей]\n\n[Вопрос клиенту для продолжения]\n\n## СЦЕНАРИЙ 3: ОФОРМЛЕНИЕ ЗАКАЗА\nКогда клиент хочет купить, запросите данные (на языке клиента):\n1. Имя\n2. Номер телефона\n3. Адрес доставки (Город, улица, дом)\n\nПосле получения данных, покажите сводку и попросите подтверждение (Да/Нет).\n\n## СЦЕНАРИЙ 4: ФИНАЛИЗАЦИЯ (Только после подтверждения клиентом)\nЕСЛИ клиент ответил \"Да/Верно/Туура\":\n1. ОБЯЗАТЕЛЬНО вызовите инструмент `Send Order` (Telegram). Передайте туда: username, имя, телефон, адрес, модель товара, цену.\n2. ТОЛЬКО ПОСЛЕ успешного вызова инструмента ответьте клиенту:\n   Кыргызский: \"Рахмат! Буюртмаңыз кабыл алынды. Биздин менеджер жакында сиз менен байланышып, жеткирүүнү уюштурат.\"\n   Русский: \"Спасибо! Ваш заказ принят. Наш менеджер свяжется с вами в ближайшее время.\"\n\n\n# ВАЖНЫЕ ЗАПРЕТЫ\n- Не здоровайтесь в каждом сообщении.\n- Не меняйте язык общения.\n- Не показывайте пустые поля (null/undefined).\n- Не оформляйте заказ без подтверждения данных клиентом.\n- Не используйте двойные кавычки и перенос строки.\n- Ответ СТРОГО не должен превышать 600 символов. Будьте максимально краткими."
+        }
+      },
+      "id": "539b0c8a-cb4b-436c-bcfc-0cb858321836",
+      "name": "New RAG Agent9",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        4112,
+        3568
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "id": "bbf20527-aa8f-4fc1-81c6-48cbfd05b17b",
+      "name": "OpenAI Chat Model10",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        4048,
+        3792
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "1T30bcIe2tfs32N6",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.entry[0].messaging[0].sender.id }}\n{{ $json.body.entry[0].time }}\n{{ $json.body.entry[0].messaging[0].message.text }}",
+        "tableName": "n8n_chat_histories_instagram_test",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4192,
+        3792
+      ],
+      "id": "263b78f1-308e-4248-b3dd-b0d8a4a73d30",
+      "name": "Postgres Chat Memory9",
+      "credentials": {
+        "postgres": {
+          "id": "OT1HePP3LZQoN2Hp",
+          "name": "LegionDB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.instagram.com/v24.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n \"recipient\": {\n \"id\": $('Webhook3').item.json.body.entry[0].messaging[0].sender.id\n },\n \"message\": {\n \"text\": ($json.text_message)\n }\n} }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5120,
+        3568
+      ],
+      "id": "a0fdc23d-2ac6-4146-a403-a8c24a53929f",
+      "name": "HTTP Request3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "h3VXvlRydzcEJV14",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55c7fd14-474f-41af-b7fc-f468f69c043a",
+              "name": "text_message",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "7bf16756-ea31-4d7d-bbc9-d586cb82fd7d",
+              "name": "recipient_id",
+              "value": "={{ $('Webhook3').item.json.body.entry[0].messaging[0].recipient.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4896,
+        3568
+      ],
+      "id": "5f7e30d1-ec9c-421b-93d7-e0f55d8f5c9a",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOutput = $input.first().json.output;\nlet sanitized = agentOutput;\nif (sanitized.length > 1000) {\n  sanitized = sanitized.substring(0, 1000);\n}\nreturn [{ json: { output: sanitized } }];"
+      },
+      "id": "2d6cc6b6-8dd7-4187-839c-4e09ccb62406",
+      "name": "Sanitize JSON Output3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4624,
+        3568
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4080,
+        3376
+      ],
+      "id": "3acb19fa-ef1d-46af-b41d-68c9f4d7e46a",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].message.is_echo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "3a970b15-78b1-4bda-b1d4-cca63f8e0bbb"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a0ce58d3-d1ab-4669-90c6-503b38b0b154",
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].message.is_echo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        3632,
+        3520
+      ],
+      "id": "89ebd468-eba2-4572-b8ae-4c3d02ad7038",
+      "name": "Switch4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12tbIetPvwP2brtHVIhndRWKhmJ5kQHncEEVWuG_hZOQ",
+          "mode": "list",
+          "cachedResultName": "База чат бот",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12tbIetPvwP2brtHVIhndRWKhmJ5kQHncEEVWuG_hZOQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 304565474,
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12tbIetPvwP2brtHVIhndRWKhmJ5kQHncEEVWuG_hZOQ/edit#gid=304565474"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        4384,
+        3792
+      ],
+      "id": "f3a0d11b-6ae5-44eb-867f-446cce02a28b",
+      "name": "Get row(s) in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "OWurL5IjCcK1JibL",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New RAG Agent9": {
+      "main": [
+        [
+          {
+            "node": "Sanitize JSON Output3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model10": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "New RAG Agent9",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory9": {
+      "ai_memory": [
+        [
+          {
+            "node": "New RAG Agent9",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitize JSON Output3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch4": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "New RAG Agent9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "New RAG Agent9",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Webhook3": [
+      {
+        "headers": {
+          "host": "alikbekalatoo77.app.n8n.cloud",
+          "user-agent": "facebookexternalua",
+          "content-length": "521",
+          "accept": "*/*",
+          "accept-encoding": "gzip, br",
+          "cdn-loop": "cloudflare; loops=1; subreqs=1",
+          "cf-connecting-ip": "2a03:2880:25ff:4d::",
+          "cf-ew-via": "15",
+          "cf-ipcountry": "US",
+          "cf-ray": "9a52feab37e4b31d-ATL",
+          "cf-visitor": "{\"scheme\":\"https\"}",
+          "cf-worker": "n8n.cloud",
+          "content-type": "application/json",
+          "instagram-api-version": "v24.0",
+          "x-forwarded-for": "2a03:2880:25ff:4d::, 104.22.1.79",
+          "x-forwarded-host": "alikbekalatoo77.app.n8n.cloud",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "traefik-prod-users-gwc-2-ddc688d69-tpm5s",
+          "x-hub-signature": "sha1=b08772b86a1053deb1daabb0467bc0bd22a70864",
+          "x-hub-signature-256": "sha256=9513670c5048787a02d87410750eb44fc6ddc6a4396cc5e85828b9c135894776",
+          "x-is-trusted": "yes",
+          "x-real-ip": "2a03:2880:25ff:4d::"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "object": "instagram",
+          "entry": [
+            {
+              "time": 1764260865727,
+              "id": "17841468856094074",
+              "messaging": [
+                {
+                  "sender": {
+                    "id": "858265120014929"
+                  },
+                  "recipient": {
+                    "id": "17841468856094074"
+                  },
+                  "timestamp": 1764260865357,
+                  "message": {
+                    "mid": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDY4ODU2MDk0MDc0OjM0MDI4MjM2Njg0MTcxMDMwMTI0NDI3NjA3ODk5MjMzMjM4MjE4MDozMjU0NDg2ODY2MjUwNjU5MTk1MzM3MTI2NjI4MzQ3MDg0OAZDZD",
+                    "text": "Какие у вас есть принтеры?"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "webhookUrl": "https://alikbekalatoo77.app.n8n.cloud/webhook/851a8bec-3132-465f-bd63-c86ed80d300e",
+        "executionMode": "production"
+      }
+    ]
+  },
+  "meta": {
+    "instanceId": "3bd415084c202701a4e18d9b066a68ad477720c950e1c2cba4cb2537b78acc07"
+  }
+}

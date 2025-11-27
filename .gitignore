@@ -1,0 +1,13 @@
+# API Keys (if you add a config file later)
+config.js
+.env
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
