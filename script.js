@@ -1,8 +1,10 @@
-let apiKey = localStorage.getItem('openai_api_key') || '';
+let apiKey = '';
 let conversationHistory = [];
 
 // Check if API key exists on page load
 window.onload = function() {
+    apiKey = localStorage.getItem('openai_api_key') || '';
+    
     if (!apiKey) {
         showApiKeyModal();
     } else {
@@ -34,6 +36,7 @@ function saveApiKey() {
     apiKey = key;
     localStorage.setItem('openai_api_key', key);
     document.getElementById('apiModal').style.display = 'none';
+    document.getElementById('apiKeyInput').value = '';
     document.getElementById('messageInput').focus();
 }
 
@@ -146,6 +149,12 @@ async function sendMessage() {
     
     if (!message) return;
     
+    // Check if API key exists
+    if (!apiKey) {
+        showApiKeyModal();
+        return;
+    }
+    
     // Add user message
     addMessage(message, 'user');
     input.value = '';
@@ -177,11 +186,17 @@ async function sendMessage() {
             })
         });
         
+        const data = await response.json();
+        
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
+            if (response.status === 401) {
+                localStorage.removeItem('openai_api_key');
+                apiKey = '';
+                throw new Error('Invalid API key. Please enter a valid key.');
+            }
+            throw new Error(data.error?.message || `API Error: ${response.status}`);
         }
         
-        const data = await response.json();
         const assistantMessage = data.choices[0].message.content;
         
         // Add to history
@@ -196,8 +211,15 @@ async function sendMessage() {
         
     } catch (error) {
         removeTypingIndicator();
-        addMessage(`Error: ${error.message}. Please check your API key.`, 'bot');
+        addMessage(`Error: ${error.message}`, 'bot');
         console.error('Error:', error);
+        
+        // If API key is invalid, show modal again
+        if (error.message.includes('Invalid API key')) {
+            setTimeout(() => {
+                showApiKeyModal();
+            }, 1500);
+        }
     } finally {
         // Re-enable input and button
         document.getElementById('sendButton').disabled = false;
