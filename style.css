@@ -11,6 +11,135 @@ body {
     overflow: hidden;
 }
 
+/* API Key Modal */
+.api-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.api-modal-content {
+    background: #2d2d2d;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.api-modal-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.api-modal-header svg {
+    margin-bottom: 20px;
+}
+
+.api-modal-header h2 {
+    color: #ececec;
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.api-modal-header p {
+    color: #8e8e8e;
+    font-size: 16px;
+}
+
+.api-modal-body input {
+    width: 100%;
+    padding: 16px 20px;
+    background: #383838;
+    border: 2px solid #4d4d4d;
+    border-radius: 12px;
+    color: #ececec;
+    font-size: 16px;
+    margin-bottom: 20px;
+    outline: none;
+    transition: all 0.2s;
+    font-family: monospace;
+}
+
+.api-modal-body input:focus {
+    border-color: #19c37d;
+    background: #404040;
+}
+
+.api-modal-body input::placeholder {
+    color: #666;
+}
+
+.api-modal-body button {
+    width: 100%;
+    padding: 16px;
+    background: #19c37d;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.api-modal-body button:hover {
+    background: #17b071;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(25, 195, 125, 0.3);
+}
+
+.api-modal-body button:active {
+    transform: translateY(0);
+}
+
+.api-modal-footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.api-modal-footer p {
+    color: #8e8e8e;
+    font-size: 13px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.api-modal-footer a {
+    color: #19c37d;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.api-modal-footer a:hover {
+    color: #17b071;
+    text-decoration: underline;
+}
+
 .chat-container {
     display: flex;
     height: 100vh;

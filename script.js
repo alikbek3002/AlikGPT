@@ -1,5 +1,53 @@
-let apiKey = 'YOUR_OPENAI_API_KEY_HERE'; // Replace with your OpenAI API key
+let apiKey = localStorage.getItem('openai_api_key') || '';
 let conversationHistory = [];
+
+// Check if API key exists on page load
+window.onload = function() {
+    if (!apiKey) {
+        showApiKeyModal();
+    } else {
+        document.getElementById('messageInput').focus();
+    }
+};
+
+function showApiKeyModal() {
+    document.getElementById('apiModal').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('apiKeyInput').focus();
+    }, 100);
+}
+
+function saveApiKey() {
+    const input = document.getElementById('apiKeyInput');
+    const key = input.value.trim();
+    
+    if (!key) {
+        alert('Please enter your API key');
+        return;
+    }
+    
+    if (!key.startsWith('sk-')) {
+        alert('Invalid API key format. It should start with "sk-"');
+        return;
+    }
+    
+    apiKey = key;
+    localStorage.setItem('openai_api_key', key);
+    document.getElementById('apiModal').style.display = 'none';
+    document.getElementById('messageInput').focus();
+}
+
+// Allow Enter key in API key input
+document.addEventListener('DOMContentLoaded', function() {
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    if (apiKeyInput) {
+        apiKeyInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                saveApiKey();
+            }
+        });
+    }
+});
 
 function newChat() {
     conversationHistory = [];
@@ -163,8 +211,3 @@ function handleKeyPress(event) {
         sendMessage();
     }
 }
-
-// Focus on message input on load
-window.onload = function() {
-    document.getElementById('messageInput').focus();
-};
