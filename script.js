@@ -243,24 +243,42 @@ function toggleMobileSidebar() {
     overlay.classList.toggle('active');
 }
 
+// Desktop sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('chatSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+}
+
 // Close sidebar when clicking outside on mobile
 document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('sidebarOverlay');
     if (overlay) {
-        overlay.addEventListener('click', toggleMobileSidebar);
+        overlay.addEventListener('click', function() {
+            const sidebar = document.getElementById('chatSidebar');
+            sidebar.classList.remove('mobile-open');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
     }
     
     // Show mobile header on small screens
     function updateMobileLayout() {
         const mobileHeader = document.querySelector('.mobile-header');
+        const desktopHeader = document.querySelector('.desktop-header');
         if (window.innerWidth <= 768) {
             mobileHeader.style.display = 'flex';
+            desktopHeader.style.display = 'none';
         } else {
             mobileHeader.style.display = 'none';
+            desktopHeader.style.display = 'flex';
             // Close sidebar if open
             const sidebar = document.getElementById('chatSidebar');
             const overlay = document.getElementById('sidebarOverlay');
             sidebar.classList.remove('mobile-open');
+            sidebar.classList.remove('open');
             overlay.classList.remove('active');
         }
     }
@@ -268,13 +286,18 @@ document.addEventListener('DOMContentLoaded', function() {
     updateMobileLayout();
     window.addEventListener('resize', updateMobileLayout);
     
-    // Close mobile sidebar after clicking new chat
+    // Close sidebar after clicking new chat
     const originalNewChat = window.newChat;
     window.newChat = function() {
         originalNewChat();
+        const sidebar = document.getElementById('chatSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
         if (window.innerWidth <= 768) {
-            toggleMobileSidebar();
+            sidebar.classList.remove('mobile-open');
+        } else {
+            sidebar.classList.remove('open');
         }
+        overlay.classList.remove('active');
     };
 });
 
