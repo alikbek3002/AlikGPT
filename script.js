@@ -233,3 +233,48 @@ function handleKeyPress(event) {
         sendMessage();
     }
 }
+
+// Mobile menu toggle
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('chatSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('sidebarOverlay');
+    if (overlay) {
+        overlay.addEventListener('click', toggleMobileSidebar);
+    }
+    
+    // Show mobile header on small screens
+    function updateMobileLayout() {
+        const mobileHeader = document.querySelector('.mobile-header');
+        if (window.innerWidth <= 768) {
+            mobileHeader.style.display = 'flex';
+        } else {
+            mobileHeader.style.display = 'none';
+            // Close sidebar if open
+            const sidebar = document.getElementById('chatSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        }
+    }
+    
+    updateMobileLayout();
+    window.addEventListener('resize', updateMobileLayout);
+    
+    // Close mobile sidebar after clicking new chat
+    const originalNewChat = window.newChat;
+    window.newChat = function() {
+        originalNewChat();
+        if (window.innerWidth <= 768) {
+            toggleMobileSidebar();
+        }
+    };
+});
+
